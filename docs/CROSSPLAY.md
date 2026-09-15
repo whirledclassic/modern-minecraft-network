@@ -1,28 +1,16 @@
 # Java + Bedrock crossplay
 
-Geyser and Floodgate run on the **Velocity proxy**.
+Geyser + Floodgate run on **Velocity only**.
 
-| Client | Address | Port |
+| Client | Port |
 | --- | --- |
-| Java Edition | your IP or domain | `25565` TCP |
-| Bedrock (phone, console, Windows Bedrock) | same IP | `19132` UDP |
+| Java | 25565 TCP |
+| Bedrock | 19132 UDP |
 
-Bedrock players show up with a `.` prefix (example: `.Steve`) unless they link a Java account.
+Bedrock names get a `.` prefix (`.Steve`) until they link a Java account. Grant shop ranks to the name you see in `/list`.
 
-## Firewall
+`auth-type` is `floodgate`. `use-proxy-protocol` stays false unless you put TCPShield or similar in front.
 
-Open **TCP 25565** and **UDP 19132**. Do not open backend or RCON ports.
+Firewall: [FIREWALL.md](FIREWALL.md). If Java works and Bedrock does not, UDP 19132 is closed.
 
-## First Bedrock join
-
-1. Start the stack once so Floodgate can generate `key.pem`.
-2. Xbox Live login on the Bedrock client.
-3. Add server → IP of your host, port `19132`.
-
-If Bedrock cannot see the server, the UDP port is almost always blocked.
-
-## Optional: link Java + Bedrock skins / names
-
-Global linking is enabled in `config/floodgate.yml`. Players can use Floodgate's link flow so a Bedrock account uses a Java username.
-
-Putting Floodgate on the Paper backends is only required if you want the Floodgate API inside lobby/survival plugins. The default template does not do that.
+Floodgate on Paper is optional and needs a copied `key.pem`. This template does not do that.

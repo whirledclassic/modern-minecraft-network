@@ -2,7 +2,7 @@
 
 Java + Bedrock network with lobby, survival, money, ranks, website, and admin console.
 
-**If you have never hosted a server, read [docs/START-HERE.md](docs/START-HERE.md) first.**
+**Never hosted before?** [docs/START-HERE.md](docs/START-HERE.md)
 
 ```bash
 ./scripts/install.sh
@@ -11,23 +11,22 @@ Java + Bedrock network with lobby, survival, money, ranks, website, and admin co
 
 ## Play loop
 
-1. Join `localhost:25565` (Bedrock: UDP `19132`)
+1. Join `localhost:25565` (Bedrock UDP `19132`)
 2. `/server survival`
-3. `/bal` — you start with $500
-4. `/kit starter` — tools and bread
-5. Mine, `/sell hand`, `/pay` friends, `/sethome`
-6. Website ranks: `http://localhost:8080`
+3. `/bal` — $500 to start
+4. `/kit starter`
+5. Mine, `/sell hand`, `/pay`, `/sethome`
+6. Site `http://localhost:8080`
 
 ## Staff
 
-- In-game commands: [docs/ADMIN-COMMANDS.md](docs/ADMIN-COMMANDS.md)
-- Website console: `http://localhost:8080/console`
-- Put your Java name in `.env` as `OPS=YourName`
+- [Admin commands](docs/ADMIN-COMMANDS.md)
+- Console `http://localhost:8080/console`
+- `OPS=YourName` in `.env`
 
-## More docs
+## Docs
 
-- [Economy](docs/ECONOMY.md)
-- [Launch checklist](docs/LAUNCH.md)
-- [Profit plan](docs/PROFIT.md)
-- [Shared ranks](docs/DATABASE.md)
-- [Crossplay](docs/CROSSPLAY.md)
+- [Troubleshooting](docs/TROUBLESHOOTING.md)
+- [Firewall](docs/FIREWALL.md)
+- [Research notes](docs/RESEARCH.md)
+- [Economy](docs/ECONOMY.md) · [Launch](docs/LAUNCH.md) · [Profit](docs/PROFIT.md)
