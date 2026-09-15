@@ -1,0 +1,8 @@
+gamerule doDaylightCycle false
+gamerule doWeatherCycle false
+gamerule doMobSpawning false
+lp creategroup vip
+lp creategroup elite
+lp creategroup champion
+lp group default permission set velocity.command.server true
+say Lobby ranks ready.

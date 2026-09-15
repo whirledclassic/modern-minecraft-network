@@ -3,9 +3,8 @@
 !plugins/**/.gitkeep
 proxy/forwarding.secret
 data/
-lobby-data/
-survival-data/
-proxy-data/
+backups/
+platform-data/
 **/*.log
 crash-reports/
 libraries/

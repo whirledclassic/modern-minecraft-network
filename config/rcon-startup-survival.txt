@@ -1,0 +1,17 @@
+lp creategroup vip
+lp creategroup elite
+lp creategroup champion
+lp group vip parent set default
+lp group elite parent set vip
+lp group champion parent set elite
+lp group default permission set essentials.spawn true
+lp group default permission set essentials.tpa true
+lp group default permission set essentials.home true
+lp group default permission set essentials.sethome true
+lp group default permission set essentials.msg true
+lp group default permission set velocity.command.server true
+lp group vip permission set essentials.sethome.multiple.3 true
+lp group elite permission set essentials.sethome.multiple.6 true
+lp group champion permission set essentials.sethome.multiple.12 true
+lp group champion permission set essentials.fly true
+say Survival ranks ready.
