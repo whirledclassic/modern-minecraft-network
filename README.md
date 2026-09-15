@@ -1,42 +1,26 @@
 # Modern Minecraft Network
 
-A ready-to-run **modern Minecraft network**:
+Ready-to-run **Java + Bedrock** network:
 
-- **Velocity** proxy (single public address)
-- **Paper lobby** (hub / spawn / server selector)
-- **Paper survival** (the actual game world)
+- Velocity proxy
+- Paper lobby with a generated modern hub + compass selector
+- Paper survival with a spawn plaza
+- Geyser + Floodgate crossplay
+- Web admin panel on `:8080`
 
-Players connect once, land in the lobby, then transfer to survival without logging out.
-
-This repo is a **template**, not a hosted server. You run it on your own machine, VPS, or game host with Docker.
+This is a template. You run it on your machine or VPS with Docker.
 
 ## Architecture
 
 ```
-Players
-   |
-   |  :25565  (and optional Bedrock :19132 later)
-   v
-Velocity proxy
-   |-- lobby     Paper  adventure hub
-   `-- survival  Paper  survival world
+Java :25565 TCP ──┐
+                  ├─▶ Velocity + Geyser + Floodgate
+Bedrock :19132 UDP┘           │
+                              ├── lobby     (adventure hub)
+                              └── survival  (world + claims)
+                                   │
+                            admin panel :8080  (RCON)
 ```
-
-Recommended stack for 2026:
-
-| Role | Software |
-| --- | --- |
-| Proxy | Velocity |
-| Backends | Paper |
-| Runtime | Docker Compose + [itzg/minecraft-server](https://github.com/itzg/docker-minecraft-server) |
-| Auth | Mojang/Microsoft online-mode on the proxy, modern player-info forwarding |
-
-## Requirements
-
-- Docker + Docker Compose v2
-- 6 GB+ RAM free (default: proxy 512 MB, lobby 2 GB, survival 4 GB)
-- Open UDP/TCP **25565** to players
-- Java is **not** required on the host if you use Docker
 
 ## Quick start
 
@@ -45,124 +29,101 @@ git clone https://github.com/whirledclassic/modern-minecraft-network.git
 cd modern-minecraft-network
 
 cp .env.example .env
-# edit .env — change VELOCITY_SECRET and MEMORY if needed
-
-# generate a unique forwarding secret (do this once)
+chmod +x scripts/new-secret.sh scripts/backup.sh
 ./scripts/new-secret.sh
+# edit .env — set ADMIN_PASSWORD and RCON_PASSWORD
 
-docker compose up -d
+docker compose up -d --build
 docker compose logs -f
 ```
 
-Connect with the Minecraft Java client to:
+First boot downloads Paper, Velocity, Geyser, Floodgate, and plugins. Give it a few minutes.
 
-```
-localhost:25565
-```
+### Join
 
-or your VPS public IP / domain on port 25565.
+| Client | Address |
+| --- | --- |
+| Java | `localhost:25565` or `your.ip:25565` |
+| Bedrock | same IP, port `19132` |
+| Admin panel | `http://localhost:8080` |
 
-First boot downloads Paper, Velocity, and plugins. That can take a few minutes.
+In the lobby, right-click the **compass** → Survival.
 
-## What you get out of the box
-
-### Lobby
-
-- Adventure mode, no PvP, no Nether
-- Peaceful / hub-style defaults
-- LuckPerms, Vault, PlaceholderAPI, ViaVersion, TAB
-- Drop extra lobby plugins into `plugins/lobby/`
-
-### Survival
-
-- Survival, normal difficulty, PvP on, Nether on
-- EssentialsX, LuckPerms, Vault, WorldGuard, CoreProtect, GriefPrevention, PlaceholderAPI, ViaVersion, Spark
-- Drop extra survival plugins into `plugins/survival/`
-
-### Proxy
-
-- Online-mode authentication
-- Modern forwarding (backends cannot be joined directly if configured correctly)
-- MOTD and try-list send new players to `lobby` first
-
-## Common commands
-
-```bash
-# start / stop / restart the whole network
-docker compose up -d
-docker compose down
-docker compose restart
-
-# logs
-docker compose logs -f proxy
-docker compose logs -f lobby
-docker compose logs -f survival
-
-# attach to a backend console (type 'stop' only if you intend to stop that container)
-docker attach modern-mc-lobby
-docker attach modern-mc-survival
-# detach without stopping: Ctrl+P then Ctrl+Q
-```
-
-Op yourself after first join (from the survival or lobby console):
+Then from a server console:
 
 ```
 op YourMinecraftName
 ```
 
-Then in-game:
-
 ```
 /lp user YourMinecraftName permission set * true
 ```
 
-## Transferring between servers
+## What is included
 
-From the lobby console or an in-game command plugin:
+### Lobby
+- Generated modern floating hub
+- Compass server selector (`/servers`)
+- Adventure, flight, no PvP, no weather
+- LuckPerms, Vault, PlaceholderAPI, ViaVersion, TAB
 
+### Survival
+- Normal overworld + spawn plaza
+- EssentialsX, WorldGuard, CoreProtect, GriefPrevention, Spark
+- `/hub` returns to the lobby
+
+### Proxy
+- Online-mode Java auth
+- Modern forwarding
+- Geyser + Floodgate for Bedrock
+
+### Admin panel
+- Status, player list, live commands
+- See [docs/ADMIN.md](docs/ADMIN.md)
+
+## Everyday commands
+
+```bash
+docker compose up -d --build
+docker compose down
+docker compose logs -f proxy
+docker compose logs -f lobby
+docker compose logs -f survival
+docker compose logs -f admin
+
+./scripts/backup.sh
 ```
-/server survival
-/server lobby
-```
-
-Velocity provides `/server` once a player is connected through the proxy. Add a lobby compass / NPC / GUI later with DeluxeHub, CommandPanels, Citizens, etc. See [docs/PLUGINS.md](docs/PLUGINS.md).
 
 ## Important files
 
 | Path | Purpose |
 | --- | --- |
-| `docker-compose.yml` | The whole network |
-| `.env` | Memory, version, secret, MOTD |
-| `proxy/velocity.toml` | Proxy routes and MOTD |
-| `proxy/forwarding.secret` | Shared Velocity ↔ Paper secret |
-| `config/paper-global.yml` | Enables Velocity forwarding on Paper |
-| `plugins/lobby/` | Extra lobby plugin jars |
-| `plugins/survival/` | Extra survival plugin jars |
-| `plugins/proxy/` | Extra Velocity plugin jars |
+| `docker-compose.yml` | Whole network |
+| `.env` | Secrets, memory, seed, MOTD |
+| `proxy/velocity.toml` | Routes |
+| `config/geyser.yml` | Bedrock listener |
+| `config/floodgate.yml` | Bedrock auth |
+| `plugin/` | Custom hub plugin source + jar |
+| `admin/` | Web admin panel |
+| `plugins/*/` | Extra jars you drop in |
 
-Worlds and plugin data live in Docker volumes (`lobby-data`, `survival-data`, `proxy-data`) so they persist across restarts.
+Worlds persist in Docker volumes `lobby-data` and `survival-data`.
 
-## Hardening checklist
+## Docs
 
-1. Replace `VELOCITY_SECRET` / `proxy/forwarding.secret` with a long random string.
-2. Do **not** publish lobby/survival ports to the internet. Only `25565` on the proxy should be public.
-3. Keep `online-mode = true` on Velocity.
-4. Keep `online-mode=false` on Paper backends — the proxy already authenticated the player.
-5. Add a whitelist or auth plugin if this is a private friends server.
-6. Take backups of the Docker volumes (especially `survival-data`).
+- [Crossplay](docs/CROSSPLAY.md)
+- [Admin panel](docs/ADMIN.md)
+- [Custom maps](docs/MAPS.md)
+- [Plugins](docs/PLUGINS.md)
+- [Bare metal](docs/BARE-METAL.md)
 
-## Without Docker
+## Hardening
 
-See [docs/BARE-METAL.md](docs/BARE-METAL.md) if you want to run the jars directly on a VPS.
-
-## Next steps
-
-- Build a real lobby map and set the world spawn
-- Add DeluxeHub / CommandPanels for a server selector item
-- Connect LuckPerms across servers with MySQL
-- Add Geyser + Floodgate for Bedrock cross-play
-- Point a domain at your host (`play.example.com`)
+1. Run `./scripts/new-secret.sh` and change `ADMIN_PASSWORD` / `RCON_PASSWORD`.
+2. Publish only `25565/tcp`, `19132/udp`, and maybe `8080` (prefer a tunnel for the panel).
+3. Never publish backend or RCON ports.
+4. Backup `survival-data` if people start building.
 
 ## License
 
-MIT. Minecraft is a trademark of Mojang/Microsoft. Paper and Velocity are from PaperMC. This repo only ships configuration and automation — you download official server software at runtime.
+MIT. Minecraft is a trademark of Mojang/Microsoft. Paper, Velocity, Geyser, and Floodgate belong to their authors. This repo ships configuration, a small hub plugin, and an admin UI. Server software is downloaded at runtime.
