@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>__NAME__</title>
+<link rel="icon" href="/static/logo.svg"/>
+<style>
+:root{--bg:#07080f;--card:#10131d;--line:#23283a;--text:#eef3ff;--muted:#93a0bb;--cyan:#3ee0c9;--gold:#f4c46b;--violet:#8b7cff}
+*{box-sizing:border-box}body{margin:0;font-family:ui-sans-serif,system-ui,sans-serif;background:
+radial-gradient(900px 500px at 10% -10%,#16343c 0%,transparent 50%),
+radial-gradient(700px 400px at 90% 0%,#2a1850 0%,transparent 45%),var(--bg);color:var(--text)}
+a{color:var(--cyan);text-decoration:none}
+header{max-width:1120px;margin:auto;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.08em}
+.brand img{width:40px;height:40px}
+nav{display:flex;gap:16px;flex-wrap:wrap}nav a{color:var(--muted)}nav a:hover{color:var(--text)}
+.hero{max-width:1120px;margin:auto;padding:24px 20px 8px;display:grid;grid-template-columns:1.2fr .8fr;gap:28px;align-items:center}
+.hero h1{font-size:clamp(40px,7vw,76px);line-height:.92;margin:0 0 14px;letter-spacing:-.04em}
+.hero p{color:var(--muted);font-size:18px;max-width:560px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.btn{background:linear-gradient(180deg,#4af0d6,#1fb8a5);color:#041210;border:0;border-radius:12px;padding:12px 16px;font-weight:800;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+.ip{font-family:ui-monospace,monospace;background:#0b0e16;border:1px solid var(--line);padding:12px 14px;border-radius:12px}
+.mark{background:rgba(16,19,29,.75);border:1px solid var(--line);border-radius:24px;padding:18px;text-align:center}
+.mark img{width:100%;max-width:280px}
+.grid{max-width:1120px;margin:auto;padding:12px 20px 36px;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.card{background:rgba(16,19,29,.92);border:1px solid var(--line);border-radius:18px;padding:18px}
+.price{font-size:28px;margin:8px 0}.tag{color:var(--gold);font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+ul{color:var(--muted)}input{width:100%;background:#0b0e16;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:6px 0}
+.ok{color:#3ee07a}.bad{color:#ff5d73}.section{max-width:1120px;margin:auto;padding:10px 20px}.section h2{font-size:32px;margin:12px 0}
+.faq details{background:rgba(16,19,29,.92);border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin:8px 0}
+footer{max-width:1120px;margin:auto;padding:28px 20px 40px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1px solid var(--line)}
+.badges{display:flex;gap:8px;flex-wrap:wrap}.badge{border:1px solid var(--line);border-radius:999px;padding:6px 10px;font-size:12px;color:var(--muted)}
+@media(max-width:800px){.hero{grid-template-columns:1fr}}
+</style></head>
+<body>
+<header>
+  <a class="brand" href="/"><img src="/static/logo.svg" alt="logo"/> __NAME__</a>
+  <nav><a href="#play">Play</a><a href="#store">Ranks</a><a href="#rules">Rules</a><a href="#faq">FAQ</a><a href="/console">Console</a></nav>
+</header>
+<section class="hero">
+  <div>
+    <div class="badges"><span class="badge">Java + Bedrock</span><span class="badge">Lobby + Survival</span><span class="badge">Shared ranks</span></div>
+    <h1>One IP.<br>Lobby. Survival.<br>Java + Bedrock.</h1>
+    <p>Land in the beacon hub, jump into survival, make money, claim land, and unlock memberships on this site.</p>
+    <div class="row">
+      <div class="ip">__JOIN__:25565 · Bedrock 19132</div>
+      <button class="btn" onclick="copyJoin()">Copy IP</button>
+      <a class="btn ghost" href="#store">Get a rank</a>
+    </div>
+    <p id="live" style="margin-top:16px;color:var(--muted)">Checking servers…</p>
+  </div>
+  <div class="mark">
+    <img src="/static/wordmark.svg" alt="Modern Network"/>
+    <p style="color:var(--muted);margin:10px 0 0">Official mark · beacon M</p>
+  </div>
+</section>
+<section class="section" id="play"><h2>The network</h2></section>
+<section class="grid">
+  <div class="card"><h3>Lobby</h3><p>Always-day hub. Then <code>/server survival</code>.</p><div id="lobby-stat">—</div></div>
+  <div class="card"><h3>Survival</h3><p>$500 to start. Kits, homes, claims. Plaza at 0, 81, 0.</p><div id="survival-stat">—</div></div>
+  <div class="card"><h3>Java</h3><p>Direct Connection → <b>__JOIN__</b></p></div>
+  <div class="card"><h3>Bedrock</h3><p>Same IP · port <b>19132</b></p></div>
+</section>
+<section class="section" id="store"><h2>Memberships</h2><p>Prefixes and extra homes. No paid combat kits.</p></section>
+<section class="grid" id="plans"></section>
+<section class="section" id="rules"><h2>Rules</h2>
+<div class="grid">
+  <div class="card"><h3>1. No grief</h3><p>Claims first. Rollback is not a warning.</p></div>
+  <div class="card"><h3>2. No cheats</h3><p>X-ray, fly hacks, dupes = ban.</p></div>
+  <div class="card"><h3>3. Be decent</h3><p>No slurs, scams, or spam.</p></div>
+  <div class="card"><h3>4. Economy</h3><p>No off-store cash-for-items trades.</p></div>
+</div></section>
+<section class="section faq" id="faq"><h2>FAQ</h2>
+<details><summary>Stuck in the lobby</summary><p><code>/server survival</code></p></details>
+<details><summary>Bedrock cannot connect</summary><p>Port 19132 UDP. Name may start with a dot.</p></details>
+<details><summary>/bal denied</summary><p>Use it on survival.</p></details>
+</section>
+<footer><span>© __NAME__ · beacon brand</span><a href="/console">Admin console</a></footer>
+<script>
+const JOIN="__JOIN__";
+function money(c){return (c/100).toFixed(2)}
+async function api(p,o){const r=await fetch(p,Object.assign({headers:{'Content-Type':'application/json'}},o||{}));if(!r.ok)throw new Error(await r.text());return r.json()}
+function copyJoin(){navigator.clipboard.writeText(JOIN+':25565')}
+async function boot(){
+  try{const s=await api('/api/status');
+    document.getElementById('live').innerHTML=s.ok?'<span class="ok">ONLINE</span> · '+(s.online||0)+' playing':'<span class="bad">Servers warming up</span>';
+    ['lobby','survival'].forEach(n=>{const d=s.servers[n]||{};document.getElementById(n+'-stat').textContent=d.ok?(d.online+' online'):'offline'});
+  }catch(e){document.getElementById('live').textContent='Status unavailable'}
+  const catalog=await api('/api/store/catalog');
+  document.getElementById('plans').innerHTML=catalog.products.map(p=>`<div class="card"><div class="tag">${p.tag||''}</div><h3>${p.name}</h3><div class="price">$${money(p.price_cents)} <span style="font-size:14px;color:#93a0bb">/ ${p.period}</span></div><ul>${p.perks.map(x=>'<li>'+x+'</li>').join('')}</ul><input placeholder="Minecraft username" id="u-${p.id}"/><button class="btn" onclick="buy('${p.id}')">Unlock ${p.name}</button><div id="m-${p.id}" style="margin-top:8px;color:#93a0bb;font-size:13px"></div></div>`).join('');
+}
+async function buy(sku){
+  const player=document.getElementById('u-'+sku).value.trim(); const box=document.getElementById('m-'+sku);
+  box.textContent='Creating order…';
+  try{
+    const order=await api('/api/store/checkout',{method:'POST',body:JSON.stringify({sku,player})});
+    if(order.demo){await api('/api/store/demo-pay',{method:'POST',body:JSON.stringify({order_id:order.id,token:order.demo_token})});box.innerHTML='<span class="ok">Paid.</span> Rank granted to <b>'+player+'</b>';return;}
+    box.textContent='Order pending. Staff confirm in the console.';
+  }catch(e){box.innerHTML='<span class="bad">'+e.message+'</span>'}
+}
+boot();
+</script>
+</body></html>
