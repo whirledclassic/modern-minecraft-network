@@ -1,0 +1,135 @@
+name: modern-mc
+
+services:
+  proxy:
+    image: itzg/mc-proxy
+    container_name: modern-mc-proxy
+    environment:
+      TYPE: VELOCITY
+      VELOCITY_VERSION: latest
+      MEMORY: ${PROXY_MEMORY:-512M}
+      REPLACE_ENV_VARIABLES: "true"
+      ENV_VARIABLE_PREFIX: "CFG_"
+      CFG_MOTD: "${MOTD:-&b&lModern Network &8| &fLobby + Survival}"
+      CFG_MAX_PLAYERS: "${MAX_PLAYERS:-60}"
+      CFG_FORWARDING_SECRET: "${VELOCITY_SECRET:-change-me-to-a-long-random-string}"
+    ports:
+      - "25565:25565"
+    volumes:
+      - ./proxy/velocity.toml:/config/velocity.toml:ro
+      - ./proxy/forwarding.secret:/config/forwarding.secret
+      - ./plugins/proxy:/plugins
+      - proxy-data:/server
+    depends_on:
+      lobby:
+        condition: service_healthy
+      survival:
+        condition: service_healthy
+    networks:
+      - mcnet
+    restart: unless-stopped
+
+  lobby:
+    image: itzg/minecraft-server
+    container_name: modern-mc-lobby
+    tty: true
+    stdin_open: true
+    environment:
+      EULA: "TRUE"
+      TYPE: PAPER
+      VERSION: ${MC_VERSION:-LATEST}
+      ONLINE_MODE: "FALSE"
+      MEMORY: ${LOBBY_MEMORY:-2G}
+      USE_AIKAR_FLAGS: "TRUE"
+      MODE: adventure
+      DIFFICULTY: peaceful
+      PVP: "FALSE"
+      ALLOW_NETHER: "FALSE"
+      ENABLE_COMMAND_BLOCK: "FALSE"
+      SPAWN_PROTECTION: "32"
+      MOTD: "Lobby"
+      MAX_PLAYERS: ${MAX_PLAYERS:-60}
+      VIEW_DISTANCE: "8"
+      SIMULATION_DISTANCE: "6"
+      REPLACE_ENV_VARIABLES: "TRUE"
+      ENV_VARIABLE_PREFIX: "CFG_"
+      CFG_VELOCITY_SECRET: "${VELOCITY_SECRET:-change-me-to-a-long-random-string}"
+      MODRINTH_PROJECTS: |
+        luckperms
+        vault
+        placeholderapi
+        viaversion
+        tab
+      EXISTING_OPS_FILE: MERGE
+      STOP_SERVER_ANNOUNCE_DELAY: 5
+    volumes:
+      - lobby-data:/data
+      - ./config/paper-global.yml:/config/paper-global.yml:ro
+      - ./plugins/lobby:/plugins
+    networks:
+      - mcnet
+    restart: unless-stopped
+    healthcheck:
+      test: mc-health
+      start_period: 3m
+      interval: 15s
+      retries: 20
+
+  survival:
+    image: itzg/minecraft-server
+    container_name: modern-mc-survival
+    tty: true
+    stdin_open: true
+    environment:
+      EULA: "TRUE"
+      TYPE: PAPER
+      VERSION: ${MC_VERSION:-LATEST}
+      ONLINE_MODE: "FALSE"
+      MEMORY: ${SURVIVAL_MEMORY:-4G}
+      USE_AIKAR_FLAGS: "TRUE"
+      MODE: survival
+      DIFFICULTY: normal
+      PVP: "TRUE"
+      ALLOW_NETHER: "TRUE"
+      ENABLE_COMMAND_BLOCK: "FALSE"
+      SPAWN_PROTECTION: "16"
+      MOTD: "Survival"
+      MAX_PLAYERS: ${MAX_PLAYERS:-60}
+      VIEW_DISTANCE: "10"
+      SIMULATION_DISTANCE: "8"
+      REPLACE_ENV_VARIABLES: "TRUE"
+      ENV_VARIABLE_PREFIX: "CFG_"
+      CFG_VELOCITY_SECRET: "${VELOCITY_SECRET:-change-me-to-a-long-random-string}"
+      MODRINTH_PROJECTS: |
+        luckperms
+        essentialsx
+        vault
+        worldguard
+        coreprotect
+        griefprevention
+        placeholderapi
+        viaversion
+        spark
+      EXISTING_OPS_FILE: MERGE
+      STOP_SERVER_ANNOUNCE_DELAY: 10
+    volumes:
+      - survival-data:/data
+      - ./config/paper-global.yml:/config/paper-global.yml:ro
+      - ./plugins/survival:/plugins
+    networks:
+      - mcnet
+    restart: unless-stopped
+    healthcheck:
+      test: mc-health
+      start_period: 4m
+      interval: 15s
+      retries: 20
+
+volumes:
+  proxy-data:
+  lobby-data:
+  survival-data:
+
+networks:
+  mcnet:
+    driver: bridge

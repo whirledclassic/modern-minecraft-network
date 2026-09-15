@@ -1,0 +1,13 @@
+# Minimal Paper global config for Velocity modern forwarding.
+# itzg replaces ${CFG_VELOCITY_SECRET} from the container environment.
+
+_version: 29
+
+proxies:
+  bungee-cord:
+    online-mode: true
+  proxy-protocol: false
+  velocity:
+    enabled: true
+    online-mode: true
+    secret: ${CFG_VELOCITY_SECRET}
