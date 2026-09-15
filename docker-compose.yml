@@ -24,6 +24,26 @@ services:
     networks:
       - mcnet
 
+  db:
+    image: mariadb:11
+    container_name: modern-mc-db
+    environment:
+      MYSQL_DATABASE: luckperms
+      MYSQL_USER: luckperms
+      MYSQL_PASSWORD: ${DB_PASSWORD:-change-me-db}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-change-me-db-root}
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - mcnet
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
   proxy:
     image: itzg/mc-proxy
     container_name: modern-mc-proxy
@@ -62,6 +82,8 @@ services:
     depends_on:
       bootstrap:
         condition: service_completed_successfully
+      db:
+        condition: service_healthy
     environment:
       EULA: "TRUE"
       TYPE: PAPER
@@ -94,10 +116,14 @@ services:
         lp creategroup vip
         lp creategroup elite
         lp creategroup champion
+        lp group vip meta set prefix "&a[VIP] &f"
+        lp group elite meta set prefix "&d[Elite] &f"
+        lp group champion meta set prefix "&6[Champion] &f"
         lp group default permission set velocity.command.server true
       REPLACE_ENV_VARIABLES: "TRUE"
       ENV_VARIABLE_PREFIX: "CFG_"
       CFG_VELOCITY_SECRET: "${VELOCITY_SECRET:-change-me-to-a-long-random-string}"
+      CFG_LP_PASSWORD: "${DB_PASSWORD:-change-me-db}"
       MODRINTH_PROJECTS: |
         luckperms
         vault
@@ -109,6 +135,8 @@ services:
     volumes:
       - lobby-data:/data
       - ./config/paper-global.yml:/config/paper-global.yml:ro
+      - ./config/luckperms-lobby.yml:/data/plugins/LuckPerms/config.yml
+      - ./config/tab.yml:/data/plugins/TAB/config.yml
       - ./plugins/lobby:/plugins
       - ./datapacks/lobby:/data/world/datapacks/modern-hub
     networks:
@@ -128,6 +156,8 @@ services:
     depends_on:
       bootstrap:
         condition: service_completed_successfully
+      db:
+        condition: service_healthy
     environment:
       EULA: "TRUE"
       TYPE: PAPER
@@ -161,9 +191,17 @@ services:
         lp group default permission set essentials.home true
         lp group default permission set essentials.sethome true
         lp group default permission set velocity.command.server true
+        lp group vip permission set essentials.sethome.multiple.3 true
+        lp group elite permission set essentials.sethome.multiple.6 true
+        lp group champion permission set essentials.sethome.multiple.12 true
+        lp group champion permission set essentials.fly true
+        lp group vip meta set prefix "&a[VIP] &f"
+        lp group elite meta set prefix "&d[Elite] &f"
+        lp group champion meta set prefix "&6[Champion] &f"
       REPLACE_ENV_VARIABLES: "TRUE"
       ENV_VARIABLE_PREFIX: "CFG_"
       CFG_VELOCITY_SECRET: "${VELOCITY_SECRET:-change-me-to-a-long-random-string}"
+      CFG_LP_PASSWORD: "${DB_PASSWORD:-change-me-db}"
       MODRINTH_PROJECTS: |
         luckperms
         essentialsx
@@ -179,6 +217,7 @@ services:
     volumes:
       - survival-data:/data
       - ./config/paper-global.yml:/config/paper-global.yml:ro
+      - ./config/luckperms-survival.yml:/data/plugins/LuckPerms/config.yml
       - ./plugins/survival:/plugins
       - ./datapacks/survival:/data/world/datapacks/modern-spawn
     networks:
@@ -222,6 +261,7 @@ volumes:
   lobby-data:
   survival-data:
   platform-data:
+  db-data:
 
 networks:
   mcnet:

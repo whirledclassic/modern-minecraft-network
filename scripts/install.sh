@@ -19,7 +19,7 @@ if [[ ! -f .env ]]; then
   echo "Created .env from .env.example"
 fi
 
-chmod +x scripts/new-secret.sh scripts/backup.sh scripts/install.sh 2>/dev/null || true
+chmod +x scripts/new-secret.sh scripts/backup.sh scripts/install.sh scripts/health.sh 2>/dev/null || true
 ./scripts/new-secret.sh
 
 python3 - << 'PY' || true
@@ -33,25 +33,28 @@ def fill(key, n=24):
         t += f"\n{key}={secrets.token_urlsafe(n)}\n"
         return
     val = m.group(1).strip()
-    if val in ("", "change-me", "change-me-too", "change-me-admin", "change-me-to-a-long-random-string"):
+    if val in ("", "change-me", "change-me-too", "change-me-admin", "change-me-to-a-long-random-string", "change-me-db", "change-me-db-root", "change-me-store"):
         t = re.sub(rf"^{key}=.*$", f"{key}={secrets.token_urlsafe(n)}", t, flags=re.M)
 fill("RCON_PASSWORD")
 fill("ADMIN_PASSWORD")
 fill("STORE_SECRET")
+fill("DB_PASSWORD")
+fill("DB_ROOT_PASSWORD")
 p.write_text(t)
 print("Secrets checked.")
 PY
 
 echo
-echo "Starting the full stack (proxy, lobby, survival, website, store, admin)..."
+echo "Starting proxy, lobby, survival, MariaDB, website, store..."
 docker compose up -d --build
 
 echo
-echo "Done. First boot downloads Paper / Velocity / Geyser and can take several minutes."
+echo "Done. First boot can take several minutes."
 echo
 echo "  Java:          localhost:25565"
 echo "  Bedrock:       localhost:19132"
 echo "  Website/store: http://localhost:8080"
 echo "  Admin console: http://localhost:8080/console"
 echo
-echo "Follow logs:  docker compose logs -f"
+echo "Health:  ./scripts/health.sh"
+echo "Logs:    docker compose logs -f"
