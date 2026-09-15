@@ -1,0 +1,45 @@
+change-displayname: true
+add-prefix-suffix: true
+add-prefix-in-playerlist: true
+change-playerlist: true
+
+ops-name-color: dark_red
+allow-unsafe-enchantments: false
+
+newbies:
+  kit: starter
+
+starting-balance: 500.0
+min-money: 0
+max-money: 10000000000
+currency-symbol: '$'
+currency-symbol-suffix: false
+economy-log-enabled: true
+
+command-costs: {}
+
+enabledSigns:
+  - color
+  - balance
+  - buy
+  - sell
+  - kit
+  - warp
+
+chat:
+  radius: 0
+  format: '{DISPLAYNAME}&7: &f{MESSAGE}'
+
+sethome-multiple:
+  default: 1
+  vip: 3
+  elite: 6
+  champion: 12
+
+teleport-cooldown: 3
+teleport-delay: 0
+teleport-invulnerability: 4
+
+spawn-on-join: true
+respawn-at-home: false
+overworld-pvp: true

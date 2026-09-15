@@ -1,0 +1,20 @@
+worth:
+  cobblestone: 0.2
+  dirt: 0.1
+  oak_log: 1.5
+  coal: 2.0
+  raw_iron: 3.0
+  iron_ingot: 4.0
+  raw_gold: 5.0
+  gold_ingot: 7.0
+  diamond: 40.0
+  emerald: 35.0
+  wheat: 0.4
+  bread: 1.2
+  cooked_beef: 2.5
+  leather: 1.0
+  string: 0.8
+  bone: 0.6
+  rotten_flesh: 0.2
+  arrow: 0.3
+  gunpowder: 3.0
