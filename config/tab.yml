@@ -7,8 +7,8 @@ header-footer:
     - ""
   footer:
     - ""
-    - "&f/server survival"
-    - "&8store · localhost:8080"
+    - "&f/server survival  &8·  &f/kit starter  &8·  &f/sethome"
+    - "&7/bal  /sell hand  /tpa"
     - ""
 placeholders:
   register-tab-expansion: true

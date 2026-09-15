@@ -1,38 +1,24 @@
-# Website, store, and memberships
-
-The `platform` container is the all-in-one web client:
+# Store
 
 | URL | What |
 | --- | --- |
-| `http://HOST:8080/` | Public site + live status + membership shop |
-| `http://HOST:8080/console` | Admin console (Basic auth) |
+| `/` | Public site |
+| `/console` | Staff: orders + grant |
 
-## How a purchase works
+## Plans
 
-1. Player enters their Java username and picks VIP / Elite / Champion.
-2. The site creates an order in `/data/orders.json`.
-3. If `DEMO_PAYMENTS=true`, checkout completes immediately and LuckPerms is updated over RCON.
-4. If `DEMO_PAYMENTS=false`, the order stays **pending**. Staff open `/console` and click **Mark paid + grant**.
-
-That internal ledger does **not** collect card numbers. Take payment off-site, then confirm the order.
-
-Sell convenience and identity only. See [PROFIT.md](PROFIT.md) for the EULA fence.
-
-## Ranks granted
-
-| Plan | LuckPerms group | Length | Prefix |
+| Plan | Price | Length | Group |
 | --- | --- | --- | --- |
-| VIP | `vip` | 30 days | `[VIP]` |
-| Elite | `elite` | 30 days | `[Elite]` |
-| Champion | `champion` | lifetime | `[Champion]` |
+| VIP | $4.99 | 30 days | `vip` |
+| Elite | $9.99 | 30 days | `elite` |
+| Champion | $14.99 | 30 days | `champion` |
 
-Timed ranks are removed about once an hour after expiry.
+Champion used to be cheap lifetime. That is gone. Monthly prestige keeps the lights on.
 
-## Go live
+## Checkout
 
-```
-DEMO_PAYMENTS=false
-JOIN_HOST=play.example.com
-```
+Java name: `Steve`. Bedrock: use the name from `/list`, often `.Steve`.
 
-Restart `platform`. Confirm one real $1 test order before you post the IP anywhere public.
+`DEMO_PAYMENTS=true` auto-grants. Public hosts set `false` and click **Mark paid + grant** after real payment.
+
+No cards on this site.

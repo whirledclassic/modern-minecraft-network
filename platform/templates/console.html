@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Console · __NAME__</title>
+<link rel="icon" href="/static/logo.svg"/>
+<style>
+body{margin:0;font-family:ui-sans-serif,system-ui,sans-serif;background:#07080f;color:#eef3ff}
+header{display:flex;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #23283a;align-items:center}
+a{color:#3ee0c9}
+main{max-width:1100px;margin:auto;padding:16px;display:grid;gap:12px}
+.card{background:#10131d;border:1px solid #23283a;border-radius:16px;padding:14px}
+.ok{color:#3ee07a}.bad{color:#ff5d73}
+input,select{width:100%;background:#0b0e16;color:#eef3ff;border:1px solid #23283a;border-radius:10px;padding:8px;margin:6px 0}
+button{background:#3ee0c9;color:#041210;border:0;border-radius:10px;padding:8px 12px;font-weight:800;cursor:pointer;margin-right:6px}
+.ghost{background:transparent;color:#eef3ff;border:1px solid #23283a}
+pre{background:#0b0e16;border:1px solid #23283a;border-radius:10px;padding:10px;min-height:90px;overflow:auto}
+.tag{display:inline-block;border:1px solid #23283a;border-radius:8px;padding:3px 8px;margin:2px;font-size:12px}
+</style></head>
+<body>
+<header><strong>Staff console</strong><a href="/">Public site</a></header>
+<main>
+<div class="card" id="status">Checking…</div>
+<div class="card">
+  <b>Command</b>
+  <select id="target"><option>survival</option><option>lobby</option></select>
+  <input id="cmd" placeholder="lp user .Steve parent add vip"/>
+  <button onclick="runCmd()">Send</button>
+  <button class="ghost" onclick="quick('list')">list</button>
+  <pre id="out">Use the name from /list. Bedrock often starts with a dot.</pre>
+</div>
+<div class="card"><b>Orders</b><div id="orders">…</div></div>
+<div class="card"><b>Members</b><div id="members">…</div></div>
+</main>
+<script>
+async function api(p,o){const r=await fetch(p,Object.assign({headers:{'Content-Type':'application/json'}},o||{}));if(!r.ok)throw new Error(await r.text());return r.json()}
+async function refresh(){
+  const s=await api('/api/status');
+  document.getElementById('status').innerHTML=(s.ok?'<span class=ok>ONLINE</span>':'<span class=bad>WARMING</span>')+' · '+(s.online||0)+' in-game';
+  const store=await api('/api/store/orders');
+  document.getElementById('orders').innerHTML=store.orders.map(o=>`<div style="margin:8px 0;border-top:1px solid #23283a;padding-top:8px"><b>${o.player}</b> · ${o.sku} · ${o.status} · ${o.id.slice(0,8)} ${o.status!=='paid'?`<button onclick="fulfill('${o.id}')">Mark paid + grant</button>`:''}</div>`).join('')||'No orders.';
+  const mem=await api('/api/store/members');
+  document.getElementById('members').innerHTML=Object.values(mem.members||{}).map(m=>`<span class=tag>${m.player} · ${m.sku}</span>`).join(' ')||'No members.';
+}
+async function runCmd(command){
+  const cmd=command||document.getElementById('cmd').value; if(!cmd)return;
+  const data=await api('/api/command',{method:'POST',body:JSON.stringify({server:document.getElementById('target').value,command:cmd})});
+  document.getElementById('out').textContent=data.output||data.error||'(ok)'; refresh();
+}
+function quick(c){document.getElementById('cmd').value=c;runCmd(c)}
+async function fulfill(id){const data=await api('/api/store/fulfill',{method:'POST',body:JSON.stringify({order_id:id})});document.getElementById('out').textContent=(data.logs||[]).join('\n');refresh()}
+refresh(); setInterval(refresh,5000);
+</script></body></html>

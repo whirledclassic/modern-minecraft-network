@@ -8,6 +8,7 @@ allow-unsafe-enchantments: false
 
 newbies:
   kit: starter
+  announce-format: "&b{DISPLAYNAME} &7just landed. &f/kit starter &7· &f/sethome &7· claim with a golden shovel"
 
 starting-balance: 500.0
 min-money: 0
