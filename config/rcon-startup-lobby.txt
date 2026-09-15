@@ -4,5 +4,8 @@ gamerule doMobSpawning false
 lp creategroup vip
 lp creategroup elite
 lp creategroup champion
+lp group vip meta set prefix "&a[VIP] &f"
+lp group elite meta set prefix "&d[Elite] &f"
+lp group champion meta set prefix "&6[Champion] &f"
 lp group default permission set velocity.command.server true
 say Lobby ranks ready.
