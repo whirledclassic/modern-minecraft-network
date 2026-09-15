@@ -42,10 +42,6 @@ services:
       ENV_VARIABLE_PREFIX: "CFG_"
       CFG_MOTD: "${MOTD:-&b&lModern Network &8| &fJava + Bedrock}"
       CFG_MAX_PLAYERS: "${MAX_PLAYERS:-60}"
-      CFG_FORWARDING_SECRET: "${VELOCITY_SECRET:-change-me-to-a-long-random-string}"
-      PLUGINS: |
-        https://download.geysermc.org/v2/projects/geyser/versions/latest/builds/latest/downloads/velocity
-        https://download.geysermc.org/v2/projects/floodgate/versions/latest/builds/latest/downloads/velocity
     ports:
       - "25565:25565"
       - "19132:19132/udp"
@@ -92,6 +88,13 @@ services:
       SPAWN_NPCS: "FALSE"
       ENABLE_RCON: "TRUE"
       RCON_PASSWORD: ${RCON_PASSWORD:-change-me}
+      RCON_CMDS_STARTUP: |-
+        gamerule doDaylightCycle false
+        gamerule doWeatherCycle false
+        lp creategroup vip
+        lp creategroup elite
+        lp creategroup champion
+        lp group default permission set velocity.command.server true
       REPLACE_ENV_VARIABLES: "TRUE"
       ENV_VARIABLE_PREFIX: "CFG_"
       CFG_VELOCITY_SECRET: "${VELOCITY_SECRET:-change-me-to-a-long-random-string}"
@@ -146,6 +149,18 @@ services:
       SEED: ${SURVIVAL_SEED:-}
       ENABLE_RCON: "TRUE"
       RCON_PASSWORD: ${RCON_PASSWORD:-change-me}
+      RCON_CMDS_STARTUP: |-
+        lp creategroup vip
+        lp creategroup elite
+        lp creategroup champion
+        lp group vip parent set default
+        lp group elite parent set vip
+        lp group champion parent set elite
+        lp group default permission set essentials.spawn true
+        lp group default permission set essentials.tpa true
+        lp group default permission set essentials.home true
+        lp group default permission set essentials.sethome true
+        lp group default permission set velocity.command.server true
       REPLACE_ENV_VARIABLES: "TRUE"
       ENV_VARIABLE_PREFIX: "CFG_"
       CFG_VELOCITY_SECRET: "${VELOCITY_SECRET:-change-me-to-a-long-random-string}"
@@ -175,10 +190,10 @@ services:
       interval: 15s
       retries: 20
 
-  admin:
-    build: ./admin
-    image: modern-mc-admin:local
-    container_name: modern-mc-admin
+  platform:
+    build: ./platform
+    image: modern-mc-platform:local
+    container_name: modern-mc-platform
     depends_on:
       - lobby
       - survival
@@ -186,10 +201,18 @@ services:
       RCON_PASSWORD: ${RCON_PASSWORD:-change-me}
       ADMIN_USER: ${ADMIN_USER:-admin}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-change-me}
+      STORE_SECRET: ${STORE_SECRET:-change-me-store}
+      DEMO_PAYMENTS: ${DEMO_PAYMENTS:-true}
+      SERVER_NAME: ${SERVER_NAME:-Modern Network}
+      JOIN_HOST: ${JOIN_HOST:-localhost}
+      STORE_CURRENCY: ${STORE_CURRENCY:-USD}
       LOBBY_RCON_HOST: lobby
       SURVIVAL_RCON_HOST: survival
+      DATA_DIR: /data
     ports:
-      - "${ADMIN_PORT:-8080}:8080"
+      - "${PLATFORM_PORT:-8080}:8080"
+    volumes:
+      - platform-data:/data
     networks:
       - mcnet
     restart: unless-stopped
@@ -198,6 +221,7 @@ volumes:
   proxy-data:
   lobby-data:
   survival-data:
+  platform-data:
 
 networks:
   mcnet:

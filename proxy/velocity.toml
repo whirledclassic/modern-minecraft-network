@@ -21,14 +21,12 @@ try = [
 ]
 
 [forced-hosts]
-# "survival.example.com" = ["survival"]
 
 [advanced]
 compression-threshold = 256
 login-ratelimit = 3000
 connection-timeout = 5000
 read-timeout = 30000
-hawk-eye-packets = true
 log-command-executions = false
 log-player-connections = true
 announce-proxy-commands = true
