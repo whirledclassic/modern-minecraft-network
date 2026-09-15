@@ -1,0 +1,14 @@
+header-footer:
+  enabled: true
+  header:
+    - ""
+    - "&b&lModern Network"
+    - "&7Java + Bedrock"
+    - ""
+  footer:
+    - ""
+    - "&f/server survival"
+    - "&8store · localhost:8080"
+    - ""
+placeholders:
+  register-tab-expansion: true

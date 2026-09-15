@@ -1,0 +1,11 @@
+server: survival
+use-server-uuid-cache: true
+storage-method: MariaDB
+data:
+  address: db
+  database: luckperms
+  username: luckperms
+  password: ${CFG_LP_PASSWORD}
+  pool-size: 8
+sync-minutes: 1
+watch-files: false

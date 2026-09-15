@@ -1,44 +1,35 @@
-# Custom maps
+# Maps
 
-The `ModernNetwork` plugin builds maps on first boot.
+Datapacks build the first-look pads. The optional `ModernNetwork` plugin is not required.
 
 ## Lobby
 
-Void-style superflat world. The plugin places a floating modern hub at `0,64,0`:
+Superflat void-style world. Datapack `datapacks/lobby` places a hub at `0,64,0`:
 
-- Deepslate / quartz / cyan concrete platform
-- Beacon center
-- Corner light pillars
-- Glass rim
-- Signs for Survival and crossplay
-- Always-day, no rain, no mobs
+deepslate + quartz pad, beacon, glass rim, corner pillars, world spawn on the pad.
 
-Players join in adventure + flight with a compass. Right-click opens the server selector and sends them through Velocity.
+Rebuild from an op:
+
+```
+/function modernhub:build
+```
+
+## Survival
+
+Vanilla overworld. Datapack `datapacks/survival` places a plaza at `0,80,0` on first boot (guarded by a bedrock marker at `0 1 0`):
+
+polished deepslate pad, beacon, lanterns, tight spawn radius.
+
+Set `SURVIVAL_SEED` in `.env` to keep terrain stable across wipes.
 
 Rebuild:
 
 ```
-/hubadmin rebuild
+/function modernspawn:build
 ```
 
-(from an op account on the lobby)
+## Drop in a downloaded world
 
-## Survival
-
-Vanilla overworld terrain (set `SURVIVAL_SEED` in `.env` if you want a known seed). On first boot the plugin flattens a small spawn plaza around world spawn:
-
-- Stone / deepslate pad
-- Lantern posts
-- Rules sign
-- World spawn on the plaza
-
-Players still get a normal survival map beyond that pad. GriefPrevention claims start working as soon as someone uses a golden shovel.
-
-## Replace with a downloaded map
-
-1. Stop the stack: `docker compose down`
-2. Copy a world folder into the volume (or change compose to bind-mount `./worlds/survival:/data/world`)
-3. Set `build-on-start: false` in `plugins/survival/ModernNetwork/config.yml` so the plaza builder does not overwrite the map
-4. Start again
-
-Same idea for a custom lobby schematic / world download.
+1. `docker compose down`
+2. Bind-mount or copy the world into the volume
+3. Remove or don't run the build function if you do not want the plaza
