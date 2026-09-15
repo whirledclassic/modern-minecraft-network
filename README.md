@@ -1,6 +1,6 @@
 # Modern Minecraft Network
 
-All-in-one **Java + Bedrock** network with a website, membership store, and admin console.
+All-in-one **Java + Bedrock** network with a website, membership store, shared ranks, and admin console.
 
 ```
 ./scripts/install.sh
@@ -8,13 +8,12 @@ All-in-one **Java + Bedrock** network with a website, membership store, and admi
 
 ## Studio take
 
-This is a starter network that can take real players. It is not a finished commercial product.
+Starter network that can take real players. Not a finished commercial product.
 
-Read these before you advertise it:
-
-- [Studio review](docs/STUDIO-REVIEW.md) — what is solid, what will break
-- [Profit plan](docs/PROFIT.md) — ranks, pricing, EULA fence, 90-day model
-- [Launch checklist](docs/LAUNCH.md) — first 30 days
+- [Studio review](docs/STUDIO-REVIEW.md)
+- [Profit plan](docs/PROFIT.md)
+- [Launch checklist](docs/LAUNCH.md)
+- [Shared LuckPerms](docs/DATABASE.md)
 
 ## What boots together
 
@@ -24,8 +23,9 @@ Read these before you advertise it:
 | Bedrock | UDP `:19132` |
 | Website + store | `:8080` |
 | Admin console | `:8080/console` |
+| MariaDB | internal only |
 
-Players land in the lobby, run `/server survival`, and buy VIP / Elite / Champion on the site. Paid orders grant LuckPerms groups over RCON.
+Players land in the lobby plaza, run `/server survival`, and stand on a spawn pad at `0,81,0`. Shop ranks write to one LuckPerms database, so VIP is visible on both servers.
 
 ## Install
 
@@ -33,28 +33,24 @@ Players land in the lobby, run `/server survival`, and buy VIP / Elite / Champio
 git clone https://github.com/whirledclassic/modern-minecraft-network.git
 cd modern-minecraft-network
 ./scripts/install.sh
+./scripts/health.sh
 ```
 
-Windows: `\scripts\install.ps1` (Docker Desktop required).
-
-First boot downloads Paper, Velocity, Geyser, Floodgate, and plugins.
-
-Then:
+Windows: `scripts/install.ps1`.
 
 1. Join `localhost:25565`
-2. Open `http://localhost:8080`
-3. Console: `http://localhost:8080/console`
-4. `./scripts/health.sh`
+2. Site `http://localhost:8080`
+3. Console `http://localhost:8080/console`
 
 ## Memberships
 
 | Rank | Price | Perks |
 | --- | --- | --- |
-| VIP | $4.99 / 30d | prefix, 3 homes |
-| Elite | $9.99 / 30d | VIP + more homes |
+| VIP | $4.99 / 30d | `[VIP]` prefix, 3 homes |
+| Elite | $9.99 / 30d | VIP + 6 homes |
 | Champion | $24.99 lifetime | Elite + fly |
 
-`DEMO_PAYMENTS=true` is for local tests only. Public hosts must set it `false` and confirm orders in the console. No card numbers are collected.
+`DEMO_PAYMENTS=true` is local only. Public hosts set `false` and confirm orders in the console.
 
 ## Ops
 
@@ -62,15 +58,11 @@ Then:
 docker compose logs -f
 ./scripts/health.sh
 ./scripts/backup.sh
-docker compose down
 ```
 
 ## Docs
 
-- [Store](docs/STORE.md)
-- [Crossplay](docs/CROSSPLAY.md)
-- [Maps](docs/MAPS.md)
-- [Plugins](docs/PLUGINS.md)
+- [Store](docs/STORE.md) · [Maps](docs/MAPS.md) · [Crossplay](docs/CROSSPLAY.md) · [Plugins](docs/PLUGINS.md)
 
 ## License
 
