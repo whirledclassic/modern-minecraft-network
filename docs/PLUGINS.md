@@ -1,42 +1,16 @@
-# Plugin guide
+# Plugins
 
-Core plugins install automatically from Modrinth / Geyser downloads.
+Installed automatically.
 
-## Auto-installed
+## Proxy
+Geyser-Velocity, Floodgate-Velocity
 
-### Proxy
-- Geyser-Velocity
-- Floodgate-Velocity
+## Lobby
+LuckPerms, Vault, PlaceholderAPI, ViaVersion, TAB
 
-### Both Paper servers
-- ModernNetwork (custom hub / selector / maps)
-- LuckPerms, Vault, PlaceholderAPI, ViaVersion
+## Survival
+LuckPerms, Vault, EssentialsX + Chat + Spawn, WorldGuard, CoreProtect, GriefPrevention, PlaceholderAPI, ViaVersion, Spark
 
-### Lobby
-- TAB
+Money, kits, shop signs, and `/spawn` come from EssentialsX. Prefixes come from LuckPerms and show in chat through EssentialsX Chat.
 
-### Survival
-- EssentialsX, WorldGuard, CoreProtect, GriefPrevention, Spark
-
-## Drop-in folders
-
-- `plugins/lobby/` — extra Paper lobby jars
-- `plugins/survival/` — extra Paper survival jars
-- `plugins/proxy/` — Velocity jars only
-
-Restart after adding jars:
-
-```bash
-docker compose restart lobby
-```
-
-## Useful first permissions
-
-```
-/lp user YourName permission set * true
-/lp group default permission set essentials.spawn true
-/lp group default permission set essentials.tpa true
-/lp group default permission set essentials.home true
-/lp group default permission set essentials.sethome true
-/lp group default permission set velocity.command.server true
-```
+Drop extra jars in `plugins/survival/` or `plugins/lobby/` and restart that service.

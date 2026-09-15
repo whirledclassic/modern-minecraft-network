@@ -1,29 +1,11 @@
-# Admin panel
+# Admin console
 
-A small web panel ships as the `admin` service.
+Open `http://YOUR_IP:8080/console`
 
-URL: `http://YOUR_IP:8080`
+Login is `ADMIN_USER` / `ADMIN_PASSWORD` from `.env`.
 
-Default login comes from `.env`:
+Use it to see who is online, run console commands, and mark store orders paid.
 
-```
-ADMIN_USER=admin
-ADMIN_PASSWORD=change-me-admin
-```
+Full command list: [ADMIN-COMMANDS.md](ADMIN-COMMANDS.md)
 
-Change those before you expose port 8080.
-
-## What it can do
-
-- Live status for lobby + survival
-- Online player lists
-- Send any console command (`say`, `op`, `kick`, `whitelist`, `tps`, `save-all`)
-- Broadcast an announcement
-
-It talks to Paper over **RCON on the Docker network**. RCON is not published to the internet.
-
-## Security
-
-- Put the panel behind a VPN, SSH tunnel, or reverse proxy with HTTPS if this host is public.
-- Use a long `ADMIN_PASSWORD` and `RCON_PASSWORD`.
-- Do not map `25575` on the host.
+Do not publish port 25575. Change the console password before the host is public.
