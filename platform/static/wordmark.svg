@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 96" fill="none">
+  <rect width="520" height="96" rx="12" fill="#07080f"/>
+  <path d="M16 76 L16 20 L32 20 L48 50 L64 20 L80 20 L80 76 L66 76 L66 40 L48 68 L30 40 L30 76 Z" fill="#3ee0c9"/>
+  <path d="M32 20 L48 50 L64 20 L56 20 L48 36 L40 20 Z" fill="#f4c46b"/>
+  <text x="104" y="44" font-family="Arial,sans-serif" font-size="28" font-weight="700" fill="#eef3ff" letter-spacing="4">MODERN</text>
+  <text x="104" y="74" font-family="Arial,sans-serif" font-size="22" font-weight="700" fill="#3ee0c9" letter-spacing="6">NETWORK</text>
+  <rect x="104" y="82" width="220" height="2" fill="#f4c46b"/>
+</svg>
