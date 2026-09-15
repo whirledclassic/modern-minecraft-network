@@ -11,6 +11,6 @@ kits:
   vip:
     delay: 86400
     items:
-      - iron_pickaxe 1
-      - cooked_beef 16
+      - cooked_beef 32
       - experience_bottle 8
+      - torch 32
