@@ -21,9 +21,9 @@ DATA = Path(os.environ.get("DATA_DIR", "/data")); DATA.mkdir(parents=True, exist
 ORDERS_FILE = DATA / "orders.json"
 MEMBERS_FILE = DATA / "members.json"
 CATALOG = [
-    {"id": "vip", "name": "VIP", "price_cents": 499, "period": "30 days", "days": 30, "group": "vip", "tag": "Most picked", "perks": ["[VIP] prefix", "3 homes", "VIP kit (food)"]},
+    {"id": "vip", "name": "VIP", "price_cents": 499, "period": "30 days", "days": 30, "group": "vip", "tag": "Start here", "perks": ["[VIP] prefix", "3 homes", "Daily food kit"]},
     {"id": "elite", "name": "Elite", "price_cents": 999, "period": "30 days", "days": 30, "group": "elite", "tag": "Best value", "perks": ["Everything in VIP", "6 homes", "Elite prefix"]},
-    {"id": "champion", "name": "Champion", "price_cents": 2499, "period": "lifetime", "days": 0, "group": "champion", "tag": "Lifetime", "perks": ["Everything in Elite", "12 homes", "Gold prefix"]},
+    {"id": "champion", "name": "Champion", "price_cents": 1499, "period": "30 days", "days": 30, "group": "champion", "tag": "Prestige", "perks": ["Everything in Elite", "12 homes", "Gold prefix"]},
 ]
 _lock = threading.Lock(); _req_id = 1
 def now():
@@ -91,7 +91,7 @@ def status_payload():
 def product(sku):
     return next((p for p in CATALOG if p["id"] == sku), None)
 def valid_name(name):
-    return bool(re.fullmatch(r"[A-Za-z0-9_]{3,16}", name or ""))
+    return bool(re.fullmatch(r"\.?[A-Za-z0-9_]{3,16}", name or ""))
 def fulfill(order):
     sku = product(order["sku"]); player = order["player"]; logs = []
     group = sku.get("group") if sku else None
@@ -120,7 +120,10 @@ def expire_loop():
                         except Exception: pass
                 rec["expired"] = True; changed = True
         if changed: save_json(MEMBERS_FILE, members)
-CONSOLE = "<!DOCTYPE html><html><body style='background:#07080d;color:#eef3ff;font-family:sans-serif'><a href='/'>Site</a><p>Use HTTP basic auth. Send commands via /api/command.</p></body></html>"
+def render_template(name):
+    path = TEMPLATES / name
+    html = path.read_text(encoding="utf-8") if path.exists() else "<h1>missing</h1>"
+    return html.replace("__NAME__", SERVER_NAME).replace("__JOIN__", JOIN_HOST)
 MIME = {".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg"}
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, fmt, *args):
@@ -147,11 +150,10 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         path = unquote(urlparse(self.path).path)
         if path in ("/", "/index.html"):
-            html = (TEMPLATES / "index.html").read_text(encoding="utf-8") if (TEMPLATES / "index.html").exists() else "<h1>missing</h1>"
-            return self._send(200, html.replace("__NAME__", SERVER_NAME).replace("__JOIN__", JOIN_HOST).encode(), "text/html; charset=utf-8")
+            return self._send(200, render_template("index.html").encode(), "text/html; charset=utf-8")
         if path in ("/console", "/admin"):
             if not self.need_admin(): return
-            return self._send(200, CONSOLE.encode(), "text/html; charset=utf-8")
+            return self._send(200, render_template("console.html").encode(), "text/html; charset=utf-8")
         if path.startswith("/static/"):
             target = (STATIC / path[len("/static/"):]).resolve()
             if not str(target).startswith(str(STATIC.resolve())) or not target.is_file():
@@ -172,7 +174,7 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/store/checkout":
             sku = product(data.get("sku", "")); player = (data.get("player") or "").strip()
             if not sku: return self._json(400, {"error": "unknown plan"})
-            if not valid_name(player): return self._json(400, {"error": "Enter a valid Java username"})
+            if not valid_name(player): return self._json(400, {"error": "Use the name from /list. Bedrock often starts with a dot."})
             order = {"id": str(uuid.uuid4()), "player": player, "sku": sku["id"], "amount_cents": sku["price_cents"], "currency": CURRENCY, "status": "pending", "created": iso(now())}
             if DEMO_PAYMENTS: order["demo"] = True; order["demo_token"] = secrets.token_urlsafe(12)
             orders = load_json(ORDERS_FILE, []); orders.insert(0, order); save_json(ORDERS_FILE, orders)
