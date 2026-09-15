@@ -6,7 +6,15 @@ All-in-one **Java + Bedrock** network with a website, membership store, and admi
 ./scripts/install.sh
 ```
 
-That installer writes `.env`, generates secrets, and starts every service.
+## Studio take
+
+This is a starter network that can take real players. It is not a finished commercial product.
+
+Read these before you advertise it:
+
+- [Studio review](docs/STUDIO-REVIEW.md) — what is solid, what will break
+- [Profit plan](docs/PROFIT.md) — ranks, pricing, EULA fence, 90-day model
+- [Launch checklist](docs/LAUNCH.md) — first 30 days
 
 ## What boots together
 
@@ -16,12 +24,10 @@ That installer writes `.env`, generates secrets, and starts every service.
 | Bedrock | UDP `:19132` |
 | Website + store | `:8080` |
 | Admin console | `:8080/console` |
-| Lobby | Velocity backend |
-| Survival | Velocity backend |
 
 Players land in the lobby, run `/server survival`, and buy VIP / Elite / Champion on the site. Paid orders grant LuckPerms groups over RCON.
 
-## One-command install
+## Install
 
 ```bash
 git clone https://github.com/whirledclassic/modern-minecraft-network.git
@@ -29,46 +35,43 @@ cd modern-minecraft-network
 ./scripts/install.sh
 ```
 
-Windows (Docker Desktop required):
+Windows: `\scripts\install.ps1` (Docker Desktop required).
 
-```powershell
-.\scripts\install.ps1
-```
+First boot downloads Paper, Velocity, Geyser, Floodgate, and plugins.
 
-First start downloads Paper, Velocity, Geyser, Floodgate, and plugins. Give it a few minutes, then:
+Then:
 
 1. Join `localhost:25565`
 2. Open `http://localhost:8080`
-3. Log into `http://localhost:8080/console` with `ADMIN_USER` / `ADMIN_PASSWORD`
+3. Console: `http://localhost:8080/console`
+4. `./scripts/health.sh`
 
 ## Memberships
 
-| Rank | Default price | Perks |
+| Rank | Price | Perks |
 | --- | --- | --- |
 | VIP | $4.99 / 30d | prefix, 3 homes |
 | Elite | $9.99 / 30d | VIP + more homes |
-| Champion | $24.99 lifetime | Elite + fly permission |
+| Champion | $24.99 lifetime | Elite + fly |
 
-`DEMO_PAYMENTS=true` completes test checkouts so you can see ranks apply. Set it to `false` before taking real money, then confirm orders in the console. The store never asks for card numbers.
+`DEMO_PAYMENTS=true` is for local tests only. Public hosts must set it `false` and confirm orders in the console. No card numbers are collected.
 
-Details: [docs/STORE.md](docs/STORE.md)
-
-## Everyday commands
+## Ops
 
 ```bash
 docker compose logs -f
-docker compose ps
+./scripts/health.sh
 ./scripts/backup.sh
 docker compose down
 ```
 
 ## Docs
 
-- [Store & memberships](docs/STORE.md)
+- [Store](docs/STORE.md)
 - [Crossplay](docs/CROSSPLAY.md)
 - [Maps](docs/MAPS.md)
 - [Plugins](docs/PLUGINS.md)
 
 ## License
 
-MIT. Minecraft is a trademark of Mojang/Microsoft. Paper, Velocity, Geyser, and Floodgate belong to their authors.
+MIT. Minecraft is a trademark of Mojang/Microsoft.
