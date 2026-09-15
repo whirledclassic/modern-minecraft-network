@@ -1,0 +1,27 @@
+# Geyser-Velocity — Bedrock players join the same IP as Java.
+bedrock:
+  address: 0.0.0.0
+  port: 19132
+  clone-remote-port: false
+  motd1: "Modern Network"
+  motd2: "Lobby + Survival"
+  server-name: "Modern Network"
+  compression-level: 6
+  broadcast-port: 19132
+remote:
+  address: auto
+  port: 25565
+  auth-type: floodgate
+  use-proxy-protocol: false
+  forward-hostname: true
+floodgate-key-file: key.pem
+pending-authentication-timeout: 120
+command-suggestions: true
+passthrough-motd: true
+passthrough-player-counts: true
+max-players: 60
+debug-mode: false
+force-resource-packs: true
+log-player-ip-addresses: true
+metrics:
+  enabled: false

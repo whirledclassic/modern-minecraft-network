@@ -1,0 +1,3 @@
+server-id: lobby
+world: world
+build-on-start: true

@@ -1,0 +1,14 @@
+# Floodgate on Velocity lets Xbox Live Bedrock accounts in without a Java purchase.
+key-file-name: key.pem
+disconnect-before-login: false
+player-link:
+  enable: true
+  type: global
+  allow-manual-link: true
+  require-link: false
+  enable-own-linking: true
+send-floodgate-data: false
+username-prefix: "."
+replace-spaces: true
+metrics:
+  enabled: false

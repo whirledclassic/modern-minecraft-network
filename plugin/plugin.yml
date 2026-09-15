@@ -1,0 +1,21 @@
+name: ModernNetwork
+version: 1.1.0
+main: net.modernmc.ModernNetwork
+api-version: "1.21"
+author: whirledclassic
+description: Lobby selector, custom hub map, survival spawn plaza.
+commands:
+  servers:
+    description: Open the server selector
+    usage: /servers
+  hub:
+    description: Return to lobby
+    aliases: [lobby, spawn]
+    usage: /hub
+  hubadmin:
+    description: Rebuild custom maps
+    usage: /hubadmin rebuild
+    permission: modernnetwork.admin
+permissions:
+  modernnetwork.admin:
+    default: op

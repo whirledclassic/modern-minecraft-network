@@ -1,30 +1,62 @@
 name: modern-mc
 
 services:
+  bootstrap:
+    image: busybox:1.37
+    container_name: modern-mc-bootstrap
+    volumes:
+      - ./plugin/ModernNetwork.jar.b64:/payload/ModernNetwork.jar.b64:ro
+      - ./plugin/config-lobby.yml:/payload/config-lobby.yml:ro
+      - ./plugin/config-survival.yml:/payload/config-survival.yml:ro
+      - ./plugins/lobby:/out/lobby
+      - ./plugins/survival:/out/survival
+      - ./config/geyser.yml:/payload/geyser.yml:ro
+      - ./config/floodgate.yml:/payload/floodgate.yml:ro
+      - ./plugins/proxy:/out/proxy
+    command: >
+      sh -c "mkdir -p /out/lobby/ModernNetwork /out/survival/ModernNetwork
+      /out/proxy/Geyser-Velocity /out/proxy/floodgate
+      && base64 -d /payload/ModernNetwork.jar.b64 > /out/lobby/ModernNetwork.jar
+      && cp /out/lobby/ModernNetwork.jar /out/survival/ModernNetwork.jar
+      && cp /payload/config-lobby.yml /out/lobby/ModernNetwork/config.yml
+      && cp /payload/config-survival.yml /out/survival/ModernNetwork/config.yml
+      && cp /payload/geyser.yml /out/proxy/Geyser-Velocity/config.yml
+      && cp /payload/floodgate.yml /out/proxy/floodgate/config.yml
+      && echo bootstrap-ok"
+    restart: "no"
+    networks:
+      - mcnet
+
   proxy:
     image: itzg/mc-proxy
     container_name: modern-mc-proxy
+    depends_on:
+      bootstrap:
+        condition: service_completed_successfully
+      lobby:
+        condition: service_healthy
+      survival:
+        condition: service_healthy
     environment:
       TYPE: VELOCITY
       VELOCITY_VERSION: latest
       MEMORY: ${PROXY_MEMORY:-512M}
       REPLACE_ENV_VARIABLES: "true"
       ENV_VARIABLE_PREFIX: "CFG_"
-      CFG_MOTD: "${MOTD:-&b&lModern Network &8| &fLobby + Survival}"
+      CFG_MOTD: "${MOTD:-&b&lModern Network &8| &fJava + Bedrock}"
       CFG_MAX_PLAYERS: "${MAX_PLAYERS:-60}"
       CFG_FORWARDING_SECRET: "${VELOCITY_SECRET:-change-me-to-a-long-random-string}"
+      PLUGINS: |
+        https://download.geysermc.org/v2/projects/geyser/versions/latest/builds/latest/downloads/velocity
+        https://download.geysermc.org/v2/projects/floodgate/versions/latest/builds/latest/downloads/velocity
     ports:
       - "25565:25565"
+      - "19132:19132/udp"
     volumes:
       - ./proxy/velocity.toml:/config/velocity.toml:ro
       - ./proxy/forwarding.secret:/config/forwarding.secret
       - ./plugins/proxy:/plugins
       - proxy-data:/server
-    depends_on:
-      lobby:
-        condition: service_healthy
-      survival:
-        condition: service_healthy
     networks:
       - mcnet
     restart: unless-stopped
@@ -34,6 +66,9 @@ services:
     container_name: modern-mc-lobby
     tty: true
     stdin_open: true
+    depends_on:
+      bootstrap:
+        condition: service_completed_successfully
     environment:
       EULA: "TRUE"
       TYPE: PAPER
@@ -42,15 +77,24 @@ services:
       MEMORY: ${LOBBY_MEMORY:-2G}
       USE_AIKAR_FLAGS: "TRUE"
       MODE: adventure
+      FORCE_GAMEMODE: "TRUE"
       DIFFICULTY: peaceful
       PVP: "FALSE"
       ALLOW_NETHER: "FALSE"
       ENABLE_COMMAND_BLOCK: "FALSE"
-      SPAWN_PROTECTION: "32"
+      SPAWN_PROTECTION: "48"
       MOTD: "Lobby"
       MAX_PLAYERS: ${MAX_PLAYERS:-60}
       VIEW_DISTANCE: "8"
-      SIMULATION_DISTANCE: "6"
+      SIMULATION_DISTANCE: "4"
+      LEVEL: world
+      LEVEL_TYPE: FLAT
+      GENERATE_STRUCTURES: "FALSE"
+      SPAWN_ANIMALS: "FALSE"
+      SPAWN_MONSTERS: "FALSE"
+      SPAWN_NPCS: "FALSE"
+      ENABLE_RCON: "TRUE"
+      RCON_PASSWORD: ${RCON_PASSWORD:-change-me}
       REPLACE_ENV_VARIABLES: "TRUE"
       ENV_VARIABLE_PREFIX: "CFG_"
       CFG_VELOCITY_SECRET: "${VELOCITY_SECRET:-change-me-to-a-long-random-string}"
@@ -80,6 +124,9 @@ services:
     container_name: modern-mc-survival
     tty: true
     stdin_open: true
+    depends_on:
+      bootstrap:
+        condition: service_completed_successfully
     environment:
       EULA: "TRUE"
       TYPE: PAPER
@@ -88,7 +135,7 @@ services:
       MEMORY: ${SURVIVAL_MEMORY:-4G}
       USE_AIKAR_FLAGS: "TRUE"
       MODE: survival
-      DIFFICULTY: normal
+      DIFFICULTY: ${SURVIVAL_DIFFICULTY:-normal}
       PVP: "TRUE"
       ALLOW_NETHER: "TRUE"
       ENABLE_COMMAND_BLOCK: "FALSE"
@@ -97,6 +144,10 @@ services:
       MAX_PLAYERS: ${MAX_PLAYERS:-60}
       VIEW_DISTANCE: "10"
       SIMULATION_DISTANCE: "8"
+      LEVEL: world
+      SEED: ${SURVIVAL_SEED:-}
+      ENABLE_RCON: "TRUE"
+      RCON_PASSWORD: ${RCON_PASSWORD:-change-me}
       REPLACE_ENV_VARIABLES: "TRUE"
       ENV_VARIABLE_PREFIX: "CFG_"
       CFG_VELOCITY_SECRET: "${VELOCITY_SECRET:-change-me-to-a-long-random-string}"
@@ -124,6 +175,25 @@ services:
       start_period: 4m
       interval: 15s
       retries: 20
+
+  admin:
+    build: ./admin
+    image: modern-mc-admin:local
+    container_name: modern-mc-admin
+    depends_on:
+      - lobby
+      - survival
+    environment:
+      RCON_PASSWORD: ${RCON_PASSWORD:-change-me}
+      ADMIN_USER: ${ADMIN_USER:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-change-me}
+      LOBBY_RCON_HOST: lobby
+      SURVIVAL_RCON_HOST: survival
+    ports:
+      - "${ADMIN_PORT:-8080}:8080"
+    networks:
+      - mcnet
+    restart: unless-stopped
 
 volumes:
   proxy-data:
