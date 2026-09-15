@@ -5,7 +5,6 @@ services:
     image: busybox:1.37
     container_name: modern-mc-bootstrap
     volumes:
-      - ./plugin/ModernNetwork.jar.b64:/payload/ModernNetwork.jar.b64:ro
       - ./plugin/config-lobby.yml:/payload/config-lobby.yml:ro
       - ./plugin/config-survival.yml:/payload/config-survival.yml:ro
       - ./plugins/lobby:/out/lobby
@@ -16,8 +15,6 @@ services:
     command: >
       sh -c "mkdir -p /out/lobby/ModernNetwork /out/survival/ModernNetwork
       /out/proxy/Geyser-Velocity /out/proxy/floodgate
-      && base64 -d /payload/ModernNetwork.jar.b64 > /out/lobby/ModernNetwork.jar
-      && cp /out/lobby/ModernNetwork.jar /out/survival/ModernNetwork.jar
       && cp /payload/config-lobby.yml /out/lobby/ModernNetwork/config.yml
       && cp /payload/config-survival.yml /out/survival/ModernNetwork/config.yml
       && cp /payload/geyser.yml /out/proxy/Geyser-Velocity/config.yml
@@ -110,6 +107,7 @@ services:
       - lobby-data:/data
       - ./config/paper-global.yml:/config/paper-global.yml:ro
       - ./plugins/lobby:/plugins
+      - ./datapacks/lobby:/data/world/datapacks/modern-hub
     networks:
       - mcnet
     restart: unless-stopped
@@ -167,6 +165,7 @@ services:
       - survival-data:/data
       - ./config/paper-global.yml:/config/paper-global.yml:ro
       - ./plugins/survival:/plugins
+      - ./datapacks/survival:/data/world/datapacks/modern-spawn
     networks:
       - mcnet
     restart: unless-stopped
